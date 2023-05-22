@@ -39,10 +39,27 @@ def initplayers():
         p = player(key['player_slot'], key['gold_per_min'], key['xp_per_min'], key['kills'], key['deaths'], key['assists']) #initierar 
         playerslist.append(p)
 
+def allPlayerGPMScatter():
+    # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
+    x = np.array([1,2,3,4,5,6,7,8,9,10])
+    y = np.array([playerslist[0].gpm,playerslist[1].gpm,playerslist[2].gpm,playerslist[3].gpm,playerslist[4].gpm,playerslist[5].gpm,playerslist[6].gpm,playerslist[7].gpm,playerslist[8].gpm,playerslist[9].gpm])
+    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
+    plt.scatter(x,y, c=colors)
+    plt.show()
+
+#Welcome text that will be appended througout the project depending how the functionality is implemented        
+def printWelcome():
+    welcomestring = f'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för, skriv hjälp för hjälp'
+    print(welcomestring)
+
+printWelcome
 command = input('Ange matchid: ')
 fetchMatch(command)
 initplayers()
 printScoreboard()
+command = input('Ange statistik du vill se en scatterplot för: ')
+if command == 'gpm':
+    allPlayerGPMScatter()
 
 
 
@@ -50,9 +67,4 @@ printScoreboard()
 
 
 
-# genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
-x = np.array([1,2,3,4,5,6,7,8,9,10])
-y = np.array([playerslist[0].gpm,playerslist[1].gpm,playerslist[2].gpm,playerslist[3].gpm,playerslist[4].gpm,playerslist[5].gpm,playerslist[6].gpm,playerslist[7].gpm,playerslist[8].gpm,playerslist[9].gpm])
-colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
-plt.scatter(x,y, c=colors)
-plt.show()
+
