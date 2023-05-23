@@ -42,18 +42,36 @@ def initplayers():
 
 def allPlayerGPMScatter(): 
     # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
-    x = np.array([1,2,3,4,5,6,7,8,9,10])
-    y = np.array([playerslist[0].gpm,playerslist[1].gpm,playerslist[2].gpm,playerslist[3].gpm,playerslist[4].gpm,playerslist[5].gpm,playerslist[6].gpm,playerslist[7].gpm,playerslist[8].gpm,playerslist[9].gpm])
+    gpmlist = []
+    amountplayers = []
+    for i in range(len(playerslist)):
+        amountplayers.append(i+1)
+    for item in playerslist:
+        gpmlist.append(item.gpm)
+    x = np.array(amountplayers)
+    y = np.array(gpmlist)
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
     plt.scatter(x,y, c=colors)
+    for x,y in zip(x,y):
+        label = f'Player{format(x)} gpm: {format(y)}'
+        plt.annotate(label,(x,y))
     plt.show()
 
 def allPlayerXPMScatter(): 
     # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
-    x = np.array([1,2,3,4,5,6,7,8,9,10])
-    y = np.array([playerslist[0].xpm,playerslist[1].xpm,playerslist[2].xpm,playerslist[3].xpm,playerslist[4].xpm,playerslist[5].xpm,playerslist[6].xpm,playerslist[7].xpm,playerslist[8].xpm,playerslist[9].xpm])
+    xpmlist = []
+    amountplayers = []
+    for i in range(len(playerslist)):
+        amountplayers.append(i+1)
+    for item in playerslist:
+        xpmlist.append(item.xpm)
+    x = np.array(amountplayers)
+    y = np.array(xpmlist)
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
     plt.scatter(x,y, c=colors)
+    for x,y in zip(x,y):
+        label = f'Player{format(x)} xpm: {format(y)}'
+        plt.annotate(label,(x,y))
     plt.show()
 
 def twoPlayerGPMScatter(p1, p2): 
