@@ -57,6 +57,21 @@ def allPlayerGPMScatter():
         plt.annotate(label,(x,y))
     plt.show()
 
+def notAllplayerGPMScatter(list):
+    gpmlist = []
+    amountplayers = []
+    for item in list:
+        gpmlist.append(playerslist[int(item)-1].gpm)
+        amountplayers.append(int(item))
+    x = np.array(amountplayers)
+    y = np.array(gpmlist)
+    plt.scatter(x,y)
+    for x,y in zip(x,y):
+        label = f'Player{format(x)} gpm: {format(y)}'
+        plt.annotate(label,(x,y))
+    plt.show()
+
+
 def allPlayerXPMScatter(): 
     # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
     xpmlist = []
@@ -74,21 +89,20 @@ def allPlayerXPMScatter():
         plt.annotate(label,(x,y))
     plt.show()
 
-def twoPlayerGPMScatter(p1, p2): 
-    # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
-    x = np.array([1,2])
-    y = np.array([playerslist[p1-1].gpm,playerslist[p2-1].gpm])
-    colors = np.array(["red","green"])            
-    plt.scatter(x,y, c=colors)
+def notAllplayerXPMScatter(list):
+    xpmlist = []
+    amountplayers = []
+    for item in list:
+        xpmlist.append(playerslist[int(item)-1].xpm)
+        amountplayers.append(int(item))
+    x = np.array(amountplayers)
+    y = np.array(xpmlist)
+    plt.scatter(x,y)
+    for x,y in zip(x,y):
+        label = f'Player{format(x)} gpm: {format(y)}'
+        plt.annotate(label,(x,y))
     plt.show()
 
-def twoPlayerXPMScatter(p1, p2): 
-    # genereellt smålabbande kring matplotlib och hur spelares statistik kan användas för att visas upp i det 
-    x = np.array([1,2])
-    y = np.array([playerslist[p1-1].xpm,playerslist[p2-1].xpm])
-    colors = np.array(["red","green"])            
-    plt.scatter(x,y, c=colors)
-    plt.show()
 
 def allPlayerGPMxNET():
     x = np.array ([playerslist[0].networth,playerslist[1].networth,playerslist[2].networth,playerslist[3].networth,playerslist[4].networth,playerslist[5].networth,playerslist[6].networth,playerslist[7].networth,playerslist[8].networth,playerslist[9].networth])
@@ -101,12 +115,27 @@ def allPlayerGPMxNET():
     plt.ylabel('Gold per minute')
     plt.show()
 
+def notAllplayerGPMxNET(list):
+    networthlist = []
+    gpmlist = []
+    for item in list:
+        networthlist.append(playerslist[int(item)-1].networth)
+        gpmlist.append(playerslist[int(item)-1].gpm)
+    x = np.array(networthlist)
+    y = np.array(gpmlist)
+    plt.scatter(x,y)
+    for x,y in zip(x,y):
+        label = f'{format(x)}: {format(y)}'
+        plt.annotate(label,(x,y))
+    plt.show()
+    
+
 #Welcome text that will be appended througout the project depending how the functionality is implemented        
 def printWelcome():
     welcomestring = 'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för, skriv hjälp för hjälp'
     print(welcomestring)
 
-printWelcome
+printWelcome()
 inputMatchID = input('Ange matchid: ')
 fetchMatch(inputMatchID)
 initplayers()
@@ -115,14 +144,20 @@ while True:
     commandLine = input('Ange statistik du vill se en scatterplot för: ').split(' ')
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
         allPlayerGPMScatter()
+    if len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
+        del commandLine[0]
+        notAllplayerGPMScatter(commandLine)
     if len(commandLine) == 1 and commandLine[0] == 'xpm'.lower():
         allPlayerXPMScatter()
+    if len(commandLine) < 1 and commandLine[0] == 'xpm'.lower():
+        del commandLine[0]
+        notAllplayerXPMScatter(commandLine)
     if len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
         allPlayerGPMxNET()
-    if len(commandLine) >1 and commandLine[0] == 'gpm'.lower():
-        twoPlayerGPMScatter(int(commandLine[1]), int(commandLine[2]))
-    if len(commandLine) >1 and commandLine[0] == 'xpm'.lower():
-        twoPlayerXPMScatter(int(commandLine[1]), int(commandLine[2]))
+    if len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
+        del commandLine[0]
+        notAllplayerGPMxNET(commandLine)
+    
 
 
 
