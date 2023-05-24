@@ -141,6 +141,28 @@ def notAllplayerGPMxNET(list):
         plt.annotate(label,(x,y))
     plt.show()
     
+def netWorthPieChart():
+    networthlist = []
+    labellist = []
+    explodelist = [0]*10
+    i = 0
+    y = 0
+    netcheck = 0
+    #networthsortedlist = sorted(playerslist, key=lambda player: player.networth, reverse =True)
+    for item in playerslist:
+        networthlist.append(item.networth)
+        labellist.append(item.name)
+        i+=1
+        if item.networth > netcheck: # Finding the highest networth and using the index int i to set that pie slice to explode
+            netcheck = item.networth
+            y = i
+    explodelist[y-1] = 0.2
+    y = np.array (networthlist)
+    plt.pie(y, labels = labellist, explode = explodelist)
+    plt.show()
+
+
+
 
 #Welcome text that will be appended througout the project depending how the functionality is implemented        
 def printWelcome():
@@ -154,7 +176,7 @@ initplayers()
 setheronames()
 printScoreboard()
 while True:
-    commandLine = input('Ange statistik du vill se en scatterplot för: ').split(' ')
+    commandLine = input('Ange statistik du vill se en tabell för: ').split(' ')
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
         allPlayerGPMScatter()
     if len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
@@ -170,6 +192,8 @@ while True:
     if len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
         del commandLine[0]
         notAllplayerGPMxNET(commandLine)
+    if commandLine[0] == 'net'.lower():
+        netWorthPieChart()
     
 
 
