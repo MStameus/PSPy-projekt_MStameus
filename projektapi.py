@@ -5,7 +5,7 @@ import numpy as np
 
 # klass för spelare som kan initiaras med divierse stats från matchen
 class player:
-    def __init__(self, slot, gpm, xpm, kills, deaths, assists, networth, name):
+    def __init__(self, slot, gpm, xpm, kills, deaths, assists, networth, name, accountid):
         self.slot = slot
         self.gpm = gpm
         self.xpm = xpm
@@ -14,10 +14,15 @@ class player:
         self.assists = assists
         self.networth = networth
         self.name = name
+        self.accountid = accountid
     def __repr__(self):
         return repr(f'Player <slot> {self.slot}, <gpm> {self.gpm}, <xpm> {self.xpm}, <kills> {self.kills}, <deaths> {self.deaths}, <assists>, {self.assists}')
     def setname(self, newname):
         self.name = newname
+
+# list wich will contain the players
+playerslist = []
+
 # Method for getting information from match and writing it on JSON file
 def fetchMatch(IDstring):
     response = requests.get (f'https://api.opendota.com/api/matches/{IDstring}') 
@@ -26,11 +31,11 @@ def fetchMatch(IDstring):
     with open('match1.json', 'w') as datafh:
         json.dump(mydict, datafh, indent = 4) 
 
-# list wich will contain the players
-playerslist = []
+
 
 #Method for printing a basic scoreboard
 def printScoreboard():
+    print('Matchlängd: %.2f '% matchtime + 'minuter')
     index = 1
     for player in playerslist:
         print(f'Player{index}: {player.name} GPM: {player.gpm}, XPM: {player.xpm}: KDA: {player.kills}/{player.deaths}/{player.assists} ')
@@ -42,8 +47,13 @@ def initplayers():
          data = json.load(datafh)
     players = data['players']
     for key in players:
-        p = player(key['player_slot'], key['gold_per_min'], key['xp_per_min'], key['kills'], key['deaths'], key['assists'], key['net_worth'], key['hero_id']) #initierar 
+        p = player(key['player_slot'], key['gold_per_min'], key['xp_per_min'], key['kills'], key['deaths'], key['assists'], key['net_worth'], key['hero_id'],key['account_id']) #initierar 
         playerslist.append(p)
+
+def settime():
+    with open ('match1.json') as datafh:
+         data = json.load(datafh)
+    return data['duration']/60
 
 #method using static json file to set hero names for the players
 def setheronames():
@@ -57,17 +67,23 @@ def setheronames():
 def allPlayerGPMScatter(): 
     gpmlist = []
     amountplayers = []
+    labellist = []
     for i in range(len(playerslist)):
         amountplayers.append(i+1)
     for item in playerslist:
         gpmlist.append(item.gpm)
+        labellist.append(item.name)
     x = np.array(amountplayers)
     y = np.array(gpmlist)
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
     plt.scatter(x,y, c=colors)
+    i = 0
     for x,y in zip(x,y):
-        label = f'Player{format(x)} gpm: {format(y)}'
-        plt.annotate(label,(x,y))
+        plt.annotate(labellist,(x,y))
+        i+=1
+    plt.title('Gold per minute comparison')
+    plt.xlabel('Spelare')
+    plt.ylabel('Gold per minute')
     plt.show()
 
 def notAllplayerGPMScatter(list):
@@ -75,30 +91,38 @@ def notAllplayerGPMScatter(list):
     amountplayers = []
     for item in list:
         gpmlist.append(playerslist[int(item)-1].gpm)
-        amountplayers.append(int(item))
+        amountplayers.append(int(item).name)
     x = np.array(amountplayers)
     y = np.array(gpmlist)
     plt.scatter(x,y)
+    i = 0
     for x,y in zip(x,y):
-        label = f'Player{format(x)} gpm: {format(y)}'
-        plt.annotate(label,(x,y))
+        plt.annotate(amountplayers[i],(x,y))
+    plt.title('Gold per minute comparison')
+    plt.xlabel('Spelare')
+    plt.ylabel('Gold per minute')
     plt.show()
 
 #
 def allPlayerXPMScatter():  
     xpmlist = []
     amountplayers = []
+    labellist = []
     for i in range(len(playerslist)):
         amountplayers.append(i+1)
     for item in playerslist:
         xpmlist.append(item.xpm)
+        labellist.append(item.name)
     x = np.array(amountplayers)
     y = np.array(xpmlist)
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
     plt.scatter(x,y, c=colors)
+    i = 0
     for x,y in zip(x,y):
-        label = f'Player{format(x)} xpm: {format(y)}'
-        plt.annotate(label,(x,y))
+        plt.annotate(labellist[i],(x,y))
+    plt.title('experience per minute comparison')
+    plt.xlabel('Spelare')
+    plt.ylabel('Experience per minute')
     plt.show()
 
 def notAllplayerXPMScatter(list):
@@ -106,20 +130,34 @@ def notAllplayerXPMScatter(list):
     amountplayers = []
     for item in list:
         xpmlist.append(playerslist[int(item)-1].xpm)
-        amountplayers.append(int(item))
+        amountplayers.append(int(item).name)
     x = np.array(amountplayers)
     y = np.array(xpmlist)
     plt.scatter(x,y)
+    i = 0
     for x,y in zip(x,y):
-        label = f'Player{format(x)} gpm: {format(y)}'
-        plt.annotate(label,(x,y))
+       plt.annotate(amountplayers[i],(x,y))
+       i+=1
+    plt.title('experience per minute comparison')
+    plt.xlabel('Hero')
+    plt.ylabel('Experience per minute')
     plt.show()
 
 
 def allPlayerGPMxNET():
-    x = np.array ([playerslist[0].networth,playerslist[1].networth,playerslist[2].networth,playerslist[3].networth,playerslist[4].networth,playerslist[5].networth,playerslist[6].networth,playerslist[7].networth,playerslist[8].networth,playerslist[9].networth])
-    y = np.array ([playerslist[0].gpm,playerslist[1].gpm,playerslist[2].gpm,playerslist[3].gpm,playerslist[4].gpm,playerslist[5].gpm,playerslist[6].gpm,playerslist[7].gpm,playerslist[8].gpm,playerslist[9].gpm])
-
+    networthlist = []
+    gpmlist = []
+    labellist =[]
+    for item in playerslist:
+        networthlist.append(item.networth)
+        gpmlist.append(item.gpm)
+        labellist.append(item.name)
+    x = np.array (networthlist)
+    y = np.array (gpmlist)
+    i = 0
+    for x,y in zip(x,y):
+        plt.annotate(labellist[i],(x,y))
+        i+=1
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
     plt.scatter(x,y, c=colors)
     plt.title('Gold per minute to net worth table')
@@ -130,15 +168,21 @@ def allPlayerGPMxNET():
 def notAllplayerGPMxNET(list):
     networthlist = []
     gpmlist = []
+    labellist = []
     for item in list:
         networthlist.append(playerslist[int(item)-1].networth)
         gpmlist.append(playerslist[int(item)-1].gpm)
+        labellist.append(playerslist[int(item)-1].name)
     x = np.array(networthlist)
     y = np.array(gpmlist)
     plt.scatter(x,y)
+    i = 0
     for x,y in zip(x,y):
-        label = f'{format(x)}: {format(y)}'
-        plt.annotate(label,(x,y))
+        plt.annotate(labellist[i],(x,y))
+        i+=1
+    plt.title('Gold per minute to net worth table')
+    plt.xlabel('Networth')
+    plt.ylabel('Gold per minute')
     plt.show()
     
 def netWorthPieChart():
@@ -161,6 +205,33 @@ def netWorthPieChart():
     plt.pie(y, labels = labellist, explode = explodelist)
     plt.show()
 
+"""
+Started method for comparison of different stats towards the players total amount of wins but during testing the requests for wins and losses only returned
+errors. So this is on hold for now.
+def winComparisonGraph(list):
+    playerstatlist = []
+    labellist = []
+    winlist = []
+    comparisonstat = ''
+    list[0] = comparisonstat
+    del list[0]
+    if comparisonstat == 'gpm':
+        for item in list:
+            playerstatlist.append(playerslist[int(item)-1].gpm)
+            labellist.append(playerslist[int(item)-1].name)
+    elif comparisonstat == 'networth':
+        for item in list:
+            playerstatlist.append(playerslist[int(item)-1].networth)
+            labellist.append(playerslist[int(item)-1].name)
+    elif comparisonstat == 'kills':
+        for item in list:
+            playerstatlist.append(playerslist[int(item)-1].kills)
+            labellist.append(playerslist[int(item)-1].name)
+    for item in list:
+"""
+
+
+
 
 
 
@@ -174,26 +245,31 @@ inputMatchID = input('Ange matchid: ')
 fetchMatch(inputMatchID)
 initplayers()
 setheronames()
+matchtime = settime()
 printScoreboard()
 while True:
     commandLine = input('Ange statistik du vill se en tabell för: ').split(' ')
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
         allPlayerGPMScatter()
-    if len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
+    elif len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
         del commandLine[0]
         notAllplayerGPMScatter(commandLine)
-    if len(commandLine) == 1 and commandLine[0] == 'xpm'.lower():
+    elif len(commandLine) == 1 and commandLine[0] == 'xpm'.lower():
         allPlayerXPMScatter()
-    if len(commandLine) < 1 and commandLine[0] == 'xpm'.lower():
+    elif len(commandLine) > 1 and commandLine[0] == 'xpm'.lower():
         del commandLine[0]
         notAllplayerXPMScatter(commandLine)
-    if len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
+    elif len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
         allPlayerGPMxNET()
-    if len(commandLine) == 1 and commandLine[0] == 'gold'.lower():
+    elif len(commandLine) > 1 and commandLine[0] == 'gold'.lower():
         del commandLine[0]
         notAllplayerGPMxNET(commandLine)
-    if commandLine[0] == 'net'.lower():
+    elif commandLine[0] == 'net'.lower():
         netWorthPieChart()
+    elif commandLine[0] == 'quit'.lower():
+        quit()
+    else:
+        print('okänt kommando skriv hjälp för hjälp')
     
 
 
