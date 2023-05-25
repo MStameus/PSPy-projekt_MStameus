@@ -29,9 +29,15 @@ def fetchMatch(IDstring):
     mydict = json.loads(response.text)
 
     with open('match1.json', 'w') as datafh:
-        json.dump(mydict, datafh, indent = 4) 
+        json.dump(mydict, datafh, indent = 4)
 
-
+def saveMatchData():
+    outfilename = input('Namnge matchen för att spara den: ')
+    with open  ('match1.json') as datafh:
+        data = json.load(datafh) 
+    with open(f'{outfilename}.json', 'w') as output:
+        json.dump(data, output, indent=4)
+    print(f'Matchen har sparats lokalt som {outfilename}.json !')
 
 #Method for printing a basic scoreboard
 def printScoreboard():
@@ -44,7 +50,7 @@ def printScoreboard():
 # Method for initiating players from the match1.json file
 def initplayers():
     with open ('match1.json') as datafh:
-         data = json.load(datafh)
+        data = json.load(datafh)
     players = data['players']
     for key in players:
         p = player(key['player_slot'], key['gold_per_min'], key['xp_per_min'], key['kills'], key['deaths'], key['assists'], key['net_worth'], key['hero_id'],key['account_id']) #initierar 
@@ -74,9 +80,8 @@ def allPlayerGPMScatter():
         gpmlist.append(item.gpm)
         labellist.append(item.name)
     x = np.array(amountplayers)
-    y = np.array(gpmlist)
-    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
-    plt.scatter(x,y, c=colors)
+    y = np.array(gpmlist)            
+    plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
         plt.annotate(labellist,(x,y))
@@ -114,9 +119,8 @@ def allPlayerXPMScatter():
         xpmlist.append(item.xpm)
         labellist.append(item.name)
     x = np.array(amountplayers)
-    y = np.array(xpmlist)
-    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
-    plt.scatter(x,y, c=colors)
+    y = np.array(xpmlist)          
+    plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
         plt.annotate(labellist[i],(x,y))
@@ -157,9 +161,8 @@ def allPlayerGPMxNET():
     i = 0
     for x,y in zip(x,y):
         plt.annotate(labellist[i],(x,y))
-        i+=1
-    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","brown","cyan"])            
-    plt.scatter(x,y, c=colors)
+        i+=1            
+    plt.scatter(x,y)
     plt.title('Gold per minute to net worth table')
     plt.xlabel('Networth')
     plt.ylabel('Gold per minute')
@@ -184,7 +187,32 @@ def notAllplayerGPMxNET(list):
     plt.xlabel('Networth')
     plt.ylabel('Gold per minute')
     plt.show()
+
+def gpmvnetpm(list):
+    netperminlist = []
+    gpmlist = []
+    labellist = []
+    labellisteffic = []
+    for item in list:
+        netperminlist.append(playerslist[int(item)-1].networth/matchtime)
+        gpmlist.append(playerslist[int(item)-1].gpm)
+        labellist.append(playerslist[int(item)-1].name)
+        potential = playerslist[int(item)-1].gpm*matchtime
+        labellisteffic.append(playerslist[int(item)-1].networth/potential*100)
+    x = np.array(netperminlist)
+    y = np.array(gpmlist)
+    plt.scatter(x,y)
+    i=0
+    for x,y in zip(x,y):
+        plt.annotate(f'{labellist[i]}: {labellisteffic[i]:.1f}%',(x,y)) 
+        i+=1
+    plt.title('Gold per minute vs networth per minute graph')
+    plt.xlabel('Networth per minute')
+    plt.ylabel('Gold per minute')
+    plt.grid()
+    plt.show()
     
+
 def netWorthPieChart():
     networthlist = []
     labellist = []
@@ -192,7 +220,6 @@ def netWorthPieChart():
     i = 0
     y = 0
     netcheck = 0
-    #networthsortedlist = sorted(playerslist, key=lambda player: player.networth, reverse =True)
     for item in playerslist:
         networthlist.append(item.networth)
         labellist.append(item.name)
@@ -264,6 +291,11 @@ while True:
     elif len(commandLine) > 1 and commandLine[0] == 'gold'.lower():
         del commandLine[0]
         notAllplayerGPMxNET(commandLine)
+    elif len(commandLine)> 1 and commandLine[0] == 'eff'.lower():
+        del commandLine[0]
+        gpmvnetpm(commandLine)
+    elif commandLine[0] == 'save'.lower():
+        saveMatchData()
     elif commandLine[0] == 'net'.lower():
         netWorthPieChart()
     elif commandLine[0] == 'quit'.lower():
