@@ -20,7 +20,7 @@ class player:
     def setname(self, newname):
         self.name = newname
 
-# list wich will contain the players
+# list wich will contain the players and accessed in methods to easily access relevant stats
 playerslist = []
 
 # Method for getting information from match and writing it on JSON file
@@ -31,7 +31,7 @@ def fetchMatch(IDstring):
     with open('match1.json', 'w') as datafh:
         json.dump(mydict, datafh, indent = 4)
 
-def saveMatchData():
+def saveMatchData(): #uses the data in the file that fetchMatch initially writes on to save to user named file
     outfilename = input('Namnge matchen för att spara den: ')
     with open  ('match1.json') as datafh:
         data = json.load(datafh) 
@@ -42,23 +42,23 @@ def saveMatchData():
 #Method for printing a basic scoreboard
 def printScoreboard():
     print('Matchlängd: %.2f '% matchtime + 'minuter')
-    index = 1
+    index = 1 #used for indexing each player for the user 
     for player in playerslist:
         print(f'Player{index}: {player.name} GPM: {player.gpm}, XPM: {player.xpm}: KDA: {player.kills}/{player.deaths}/{player.assists} ')
         index +=1
 
-# Method for initiating players from the match1.json file
+# Method for initiating players from the match1.json file and appending the playerslist
 def initplayers():
     with open ('match1.json') as datafh:
-        data = json.load(datafh)
-    players = data['players']
+        data = json.load(datafh) 
+    players = data['players']    
     for key in players:
         p = player(key['player_slot'], key['gold_per_min'], key['xp_per_min'], key['kills'], key['deaths'], key['assists'], key['net_worth'], key['hero_id'],key['account_id']) #initierar 
         playerslist.append(p)
 
 def settime():
     with open ('match1.json') as datafh:
-         data = json.load(datafh)
+         data = json.load(datafh)     
     return data['duration']/60
 
 #method using static json file to set hero names for the players
@@ -84,11 +84,12 @@ def allPlayerGPMScatter():
     plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
-        plt.annotate(labellist,(x,y))
+        plt.annotate(labellist[i],(x,y), rotation = 60)
         i+=1
     plt.title('Gold per minute comparison')
     plt.xlabel('Spelare')
     plt.ylabel('Gold per minute')
+    plt.grid()
     plt.show()
 
 def notAllplayerGPMScatter(list):
@@ -97,7 +98,7 @@ def notAllplayerGPMScatter(list):
     try:
         for item in list:
             gpmlist.append(playerslist[int(item)-1].gpm)
-            amountplayers.append(int(item).name)
+            amountplayers.append(playerslist[int(item)-1].name)
     except IndexError:
         print('At least one player index is invalid')
         return
@@ -106,7 +107,8 @@ def notAllplayerGPMScatter(list):
     plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
-        plt.annotate(amountplayers[i],(x,y))
+        plt.annotate(amountplayers[i],(x,y), rotation = 60)
+        i+=1
     plt.title('Gold per minute comparison')
     plt.xlabel('Spelare')
     plt.ylabel('Gold per minute')
@@ -118,19 +120,21 @@ def allPlayerXPMScatter():
     amountplayers = []
     labellist = []
     for i in range(len(playerslist)):
-        amountplayers.append(i+1)
+        amountplayers.append(i+1)    
     for item in playerslist:
         xpmlist.append(item.xpm)
-        labellist.append(item.name)
+        labellist.append(item.name)       
     x = np.array(amountplayers)
     y = np.array(xpmlist)          
     plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
-        plt.annotate(labellist[i],(x,y))
+        plt.annotate(labellist[i],(x,y), rotation = 60)
+        i+=1
     plt.title('experience per minute comparison')
     plt.xlabel('Spelare')
     plt.ylabel('Experience per minute')
+    plt.grid()
     plt.show()
 
 def notAllplayerXPMScatter(list):
@@ -148,7 +152,7 @@ def notAllplayerXPMScatter(list):
     plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
-       plt.annotate(amountplayers[i],(x,y))
+       plt.annotate(amountplayers[i],(x,y), rotation = 60)
        i+=1
     plt.title('experience per minute comparison')
     plt.xlabel('Hero')
@@ -166,14 +170,39 @@ def allPlayerGPMxNET():
         labellist.append(item.name)
     x = np.array (networthlist)
     y = np.array (gpmlist)
-    i = 0
-    for x,y in zip(x,y):
-        plt.annotate(labellist[i],(x,y))
-        i+=1            
-    plt.scatter(x,y)
-    plt.title('Gold per minute to net worth table')
+    plt.subplot(2,1,1)
     plt.xlabel('Networth')
     plt.ylabel('Gold per minute')
+    plt.scatter(x,y)
+    i = 0
+    for x,y in zip(x,y):
+        plt.annotate(labellist[i],(x,y), rotation = 60)
+        i+=1            
+    
+    #plt.title('Gold per minute to net worth table')
+    plt.grid()
+
+    networthlist2 = []
+    labellist2 = []
+    explodelist = [0]*10
+    i = 0
+    y = 0
+    netcheck = 0
+    for item in playerslist:
+        networthlist2.append(item.networth)
+        labellist2.append(item.name)
+        i+=1
+        if item.networth > netcheck: # Finding the highest networth and using the index int i to set that pie slice to explode
+            netcheck = item.networth
+            y = i
+    explodelist[y-1] = 0.2
+    y = np.array (networthlist2)
+    plt.title('Gold statistics')
+    plt.subplot(2,1,2)
+    plt.pie(y, labels = labellist2, autopct = '%1.f%%', explode = explodelist)
+
+
+
     plt.show()
 
 def notAllplayerGPMxNET(list):
@@ -189,25 +218,26 @@ def notAllplayerGPMxNET(list):
     plt.scatter(x,y)
     i = 0
     for x,y in zip(x,y):
-        plt.annotate(labellist[i],(x,y))
+        plt.annotate(labellist[i],(x,y), rotation = 60)
         i+=1
     plt.title('Gold per minute to net worth table')
     plt.xlabel('Networth')
     plt.ylabel('Gold per minute')
+    plt.grid()
     plt.show()
 
 def gpmvnetpm(list):
-    netperminlist = []
-    gpmlist = []
-    labellist = []
-    labellisteffic = []
-    try:
+    netperminlist = [] #list used for storing net worth per minute values apllied to the x axis of the table
+    gpmlist = [] # list used for storing gold per minute values apllied to the y axis of the table
+    labellist = []  
+    labellisteffic = [] # two separate lists for storing the point labels in this case hero name and percntage of gold earned that is in the heros networth at finished game
+    try: #user input list by inputting player indexes 1-10 is used to accessing playerslist and getting their elements
         for item in list:
             netperminlist.append(playerslist[int(item)-1].networth/matchtime)
             gpmlist.append(playerslist[int(item)-1].gpm)
             labellist.append(playerslist[int(item)-1].name)
-            potential = playerslist[int(item)-1].gpm*matchtime
-            labellisteffic.append(playerslist[int(item)-1].networth/potential*100)
+            potential = playerslist[int(item)-1].gpm*matchtime #if 100% of gpm was converted in to networth
+            labellisteffic.append(playerslist[int(item)-1].networth/potential*100) #percentage of gold converted in to networth
     except IndexError:
         print('At least one player index is invalid')
         return
@@ -216,7 +246,7 @@ def gpmvnetpm(list):
     plt.scatter(x,y)
     i=0
     for x,y in zip(x,y):
-        plt.annotate(f'{labellist[i]}: {labellisteffic[i]:.1f}%',(x,y)) 
+        plt.annotate(f'{labellist[i]}: {labellisteffic[i]:.1f}%',(x,y), rotation = 60) 
         i+=1
     plt.title('Gold per minute vs networth per minute graph')
     plt.xlabel('Networth per minute')
@@ -241,22 +271,37 @@ def netWorthPieChart():
             y = i
     explodelist[y-1] = 0.2
     y = np.array (networthlist)
-    plt.pie(y, labels = labellist, explode = explodelist)
+    plt.title('percentage of total networth in game')
+    plt.pie(y, labels = labellist, autopct = '%1.f%%', explode = explodelist)
     plt.show()
 
 def init():
     printWelcome()
-    inputMatchID = input('Ange matchid: ')
-    fetchMatch(inputMatchID)
-    initplayers()
-    setheronames()
+    while True:
+        inputMatchID = input('Ange matchid: ')
+        fetchMatch(inputMatchID)
+        try:
+            initplayers()
+        except KeyError:
+            print('matchid verkar inte vara giltigt')
+        else:
+            setheronames()
+            break
+        
+    
 
 def reinit():
-    playerslist.clear()
-    inputMatchID = input('Ange matchid: ')
-    fetchMatch(inputMatchID)
-    initplayers()
-    setheronames()
+    playerslist.clear() 
+    while True:
+        inputMatchID = input('Ange matchid: ')
+        fetchMatch(inputMatchID)
+        try:
+            initplayers()
+        except KeyError:
+            print('matchid verkar inte vara giltigt')
+        else:
+            setheronames()
+            break
 
 #Welcome text that will be appended througout the project depending how the functionality is implemented        
 def printWelcome():
@@ -293,7 +338,7 @@ init()
 matchtime = settime()
 printScoreboard()
 while True:
-    commandLine = input('Ange kommando för att se statistik, spara match eller kolla en ny match: ').split(' ')
+    commandLine = input('Ange kommando för att se statistik, spara match eller kolla en ny match: ').split(' ') #commandline list to be used for letting the user choose wich players to compare
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
         allPlayerGPMScatter()
     elif len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
