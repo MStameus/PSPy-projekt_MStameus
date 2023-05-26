@@ -277,6 +277,7 @@ def netWorthPieChart():
 
 def init():
     printWelcome()
+    print('Exempel på matchID: 6724244660, 7158869588, 7170784811')
     while True:
         inputMatchID = input('Ange matchid: ')
         fetchMatch(inputMatchID)
@@ -303,9 +304,18 @@ def reinit():
             setheronames()
             break
 
+def printHelp():
+    print('Kommandon:\nGPM: för att jämföra alla spelares guld per minut, följ med spelares index med mellanslag mellan varje för att välja särskilda spelare du vill jämföra'+
+          '\nXPM: för att jämföra alla spelares erfarenhet per minut, följ med spelares index med mellanslag mellan varje för att välja särskilda spelare du vill jämföra'+
+          '\nGold: för att jämföra spelare GPM så väl som nettorikedomar'+
+          '\neff: för att se hur stor andel av spelares intjänade guld faktiskt användes'+
+          '\nsave: för att spara den aktuella matchens statistik lokalt'+
+          '\nnew: för att analysera en annan match'+
+          '\nhjälp: för att skriva ut denna information'+
+          '\nquit: för att avsluta programmet')
 #Welcome text that will be appended througout the project depending how the functionality is implemented        
 def printWelcome():
-    welcomestring = 'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för, skriv hjälp för hjälp'
+    welcomestring = 'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för,\nxpm, gpm, gold för exempel, skriv hjälp för hjälp'
     print(welcomestring) 
 
 """
@@ -337,6 +347,7 @@ def winComparisonGraph(list):
 init()
 matchtime = settime()
 printScoreboard()
+
 while True:
     commandLine = input('Ange kommando för att se statistik, spara match eller kolla en ny match: ').split(' ') #commandline list to be used for letting the user choose wich players to compare
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
@@ -365,6 +376,8 @@ while True:
         reinit()
         matchtime = settime()
         printScoreboard()
+    elif commandLine[0] =='hjälp'.lower():
+        printHelp()
     elif commandLine[0] == 'quit'.lower():
         print('På återseende!')
         quit()
