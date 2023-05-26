@@ -94,9 +94,13 @@ def allPlayerGPMScatter():
 def notAllplayerGPMScatter(list):
     gpmlist = []
     amountplayers = []
-    for item in list:
-        gpmlist.append(playerslist[int(item)-1].gpm)
-        amountplayers.append(int(item).name)
+    try:
+        for item in list:
+            gpmlist.append(playerslist[int(item)-1].gpm)
+            amountplayers.append(int(item).name)
+    except IndexError:
+        print('At least one player index is invalid')
+        return
     x = np.array(amountplayers)
     y = np.array(gpmlist)
     plt.scatter(x,y)
@@ -132,9 +136,13 @@ def allPlayerXPMScatter():
 def notAllplayerXPMScatter(list):
     xpmlist = []
     amountplayers = []
-    for item in list:
-        xpmlist.append(playerslist[int(item)-1].xpm)
-        amountplayers.append(playerslist[int(item)-1].name)
+    try:
+        for item in list:
+            xpmlist.append(playerslist[int(item)-1].xpm)
+            amountplayers.append(playerslist[int(item)-1].name)
+    except IndexError:
+        print('At least one player index is invalid')
+        return
     x = np.array(amountplayers)
     y = np.array(xpmlist)
     plt.scatter(x,y)
@@ -193,12 +201,16 @@ def gpmvnetpm(list):
     gpmlist = []
     labellist = []
     labellisteffic = []
-    for item in list:
-        netperminlist.append(playerslist[int(item)-1].networth/matchtime)
-        gpmlist.append(playerslist[int(item)-1].gpm)
-        labellist.append(playerslist[int(item)-1].name)
-        potential = playerslist[int(item)-1].gpm*matchtime
-        labellisteffic.append(playerslist[int(item)-1].networth/potential*100)
+    try:
+        for item in list:
+            netperminlist.append(playerslist[int(item)-1].networth/matchtime)
+            gpmlist.append(playerslist[int(item)-1].gpm)
+            labellist.append(playerslist[int(item)-1].name)
+            potential = playerslist[int(item)-1].gpm*matchtime
+            labellisteffic.append(playerslist[int(item)-1].networth/potential*100)
+    except IndexError:
+        print('At least one player index is invalid')
+        return
     x = np.array(netperminlist)
     y = np.array(gpmlist)
     plt.scatter(x,y)
