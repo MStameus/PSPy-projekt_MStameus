@@ -134,7 +134,7 @@ def notAllplayerXPMScatter(list):
     amountplayers = []
     for item in list:
         xpmlist.append(playerslist[int(item)-1].xpm)
-        amountplayers.append(int(item).name)
+        amountplayers.append(playerslist[int(item)-1].name)
     x = np.array(amountplayers)
     y = np.array(xpmlist)
     plt.scatter(x,y)
@@ -232,6 +232,25 @@ def netWorthPieChart():
     plt.pie(y, labels = labellist, explode = explodelist)
     plt.show()
 
+def init():
+    printWelcome()
+    inputMatchID = input('Ange matchid: ')
+    fetchMatch(inputMatchID)
+    initplayers()
+    setheronames()
+
+def reinit():
+    playerslist.clear()
+    inputMatchID = input('Ange matchid: ')
+    fetchMatch(inputMatchID)
+    initplayers()
+    setheronames()
+
+#Welcome text that will be appended througout the project depending how the functionality is implemented        
+def printWelcome():
+    welcomestring = 'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för, skriv hjälp för hjälp'
+    print(welcomestring) 
+
 """
 Started method for comparison of different stats towards the players total amount of wins but during testing the requests for wins and losses only returned
 errors. So this is on hold for now.
@@ -258,24 +277,11 @@ def winComparisonGraph(list):
 """
 
 
-
-
-
-
-#Welcome text that will be appended througout the project depending how the functionality is implemented        
-def printWelcome():
-    welcomestring = 'Välkommen till detta DOTA2 matchanalysverktyg börja med att ange ett matchid för att se statitik för matchen.\n ange sedan vilken statistik du vill se en analys för, skriv hjälp för hjälp'
-    print(welcomestring)
-
-printWelcome()
-inputMatchID = input('Ange matchid: ')
-fetchMatch(inputMatchID)
-initplayers()
-setheronames()
+init()
 matchtime = settime()
 printScoreboard()
 while True:
-    commandLine = input('Ange statistik du vill se en tabell för: ').split(' ')
+    commandLine = input('Ange kommando för att se statistik, spara match eller kolla en ny match: ').split(' ')
     if len(commandLine) == 1 and commandLine[0] == 'gpm'.lower():
         allPlayerGPMScatter()
     elif len(commandLine) > 1 and commandLine[0] == 'gpm'.lower():
@@ -298,7 +304,12 @@ while True:
         saveMatchData()
     elif commandLine[0] == 'net'.lower():
         netWorthPieChart()
+    elif commandLine[0] == 'new'.lower():
+        reinit()
+        matchtime = settime()
+        printScoreboard()
     elif commandLine[0] == 'quit'.lower():
+        print('På återseende!')
         quit()
     else:
         print('okänt kommando skriv hjälp för hjälp')
