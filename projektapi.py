@@ -170,10 +170,11 @@ def allPlayerGPMxNET():
         labellist.append(item.name)
     x = np.array (networthlist)
     y = np.array (gpmlist)
+    colors = np.array(["red","green","blue","yellow","pink","grey","orange","purple","beige","brown"])
     plt.subplot(2,1,1)
     plt.xlabel('Networth')
     plt.ylabel('Gold per minute')
-    plt.scatter(x,y)
+    plt.scatter(x,y, c = colors)
     i = 0
     for x,y in zip(x,y):
         plt.annotate(labellist[i],(x,y), rotation = 60)
@@ -185,6 +186,7 @@ def allPlayerGPMxNET():
     networthlist2 = []
     labellist2 = []
     explodelist = [0]*10
+    colors1 = ["red","green","blue","yellow","pink","grey","orange","purple","beige","brown"]
     i = 0
     y = 0
     netcheck = 0
@@ -199,7 +201,7 @@ def allPlayerGPMxNET():
     y = np.array (networthlist2)
     plt.title('Gold statistics')
     plt.subplot(2,1,2)
-    plt.pie(y, labels = labellist2, autopct = '%1.f%%', explode = explodelist)
+    plt.pie(y, labels = labellist2, autopct = '%1.f%%', explode = explodelist, colors = colors1)
 
 
 
